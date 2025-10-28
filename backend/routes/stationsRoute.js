@@ -8,22 +8,27 @@ import { Station } from '../models/stationsModel.js';
 
 router.post('/', async (req, res) => {
     try {
+
+        const {title, stationType, elevatorAccessible, wheelChairAccessible} = req.body;    
+
         if (
-            req.body.title === undefined ||
-            req.body.stationType === undefined ||
-            req.body.elevatorAccessible === undefined ||
-            req.body.wheelChairAccessible === undefined
+            title === undefined ||
+            stationType === undefined ||
+            elevatorAccessible === undefined ||
+            wheelChairAccessible === undefined
         ) {
             return res.status(400).send({
                 message: 'Send all required fields: title, stationTYpe, elevatorAccessible, wheelChairAccessible',
             });
         }
 
+        const stationTypeArray = Array.isArray(stationType) ? stationType : [stationType];
+
         const newStation = {
-            title: req.body.title,
-            stationType: req.body.stationType,
-            elevatorAccessible: req.body.elevatorAccessible,
-            wheelChairAccessible: req.body.wheelChairAccessible,
+            title,
+            stationType: stationTypeArray,
+            elevatorAccessible,
+            wheelChairAccessible,
         };
 
         const stations = await Station.create(newStation);

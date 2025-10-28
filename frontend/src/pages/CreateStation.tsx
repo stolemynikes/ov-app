@@ -15,7 +15,7 @@ import { CustomCheckbox } from "@/components/customCheckbox"; // Adjust import p
 
 export default function CreateStation() {
   const [title, setTitle] = useState('');
-  const [stationType, setStationType] = useState('');
+  const [stationTypes, setStationTypes] = useState<Set<string>>(new Set());
   const [elevatorAccessible, setElevatorAccessible] = useState(false);
   const [wheelChairAccessible, setWheelChairAccessible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,11 +23,11 @@ export default function CreateStation() {
   const navigate = useNavigate();
 
   const handleSaveStation = async () => {
-    if (!title || !stationType) return;
+    if (!title || !stationTypes) return;
 
     const data = {
       title,
-      stationType,
+      stationType: Array.from(stationTypes),
       elevatorAccessible,
       wheelChairAccessible,
     };
@@ -66,11 +66,9 @@ export default function CreateStation() {
           <Select
             label="Station Type"
             placeholder="Select station type"
-            selectedKeys={stationType ? [stationType] : []}
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0] as string;
-              setStationType(selected);
-            }}
+            selectionMode="multiple"
+            selectedKeys={stationTypes}
+            onSelectionChange={(keys) => setStationTypes(new Set(keys as Set<string>))}
             isRequired
             disabled={loading}
           >
@@ -102,7 +100,7 @@ export default function CreateStation() {
             color="primary"
             className="w-full mt-4"
             onClick={handleSaveStation}
-            isDisabled={loading || !title || !stationType}
+            isDisabled={loading || !title || stationTypes.size === 0}
           >
             Save Station
           </Button>

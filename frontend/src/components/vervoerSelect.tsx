@@ -1,6 +1,6 @@
-import { RadioGroup, Radio, cn } from "@heroui/react";
+import { RadioGroup, Radio, RadioProps, cn } from "@heroui/react";
 
-export const CustomRadio = (props) => {
+export const CustomRadio = (props: RadioProps) => {
     const { children, ...otherProps } = props;
 
     return (
@@ -19,12 +19,20 @@ export const CustomRadio = (props) => {
     );
 };
 
-export default function App() {
+interface VervoerSelectProps {
+  selectedFilter: string;
+  onChange: (val: string) => void;
+}
+
+export default function VervoerSelect({ selectedFilter, onChange }: VervoerSelectProps) {
+
     return (
         <RadioGroup
             label="Selecteer vervoer:"
             orientation="horizontal"
             className="flex gap-4"
+            value={selectedFilter}
+            onValueChange={onChange}
         >
             <CustomRadio description="" value="">
                 Alles

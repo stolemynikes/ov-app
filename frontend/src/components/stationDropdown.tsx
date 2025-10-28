@@ -1,21 +1,35 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Select, SelectItem } from "@heroui/react";
+import { Autocomplete, AutocompleteItem } from "@heroui/react";
 
 type Station = {
     _id: string;
     title: string;
-    stationType: string;
+    stationType: string[];
     elevatorAccessible: boolean;
     wheelChairAccessible: boolean;
 };
 
-export default function StationDropdown() {
+interface StationDropdownProps {
+    selectedTypeFilter: string;
+}
+
+
+
+export default function StationDropdown({ selectedTypeFilter }: StationDropdownProps) {
     const [stations, setStations] = useState<Station[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [beginStationId, setBeginStationId] = useState<string | null>(null);
     const [endStationId, setEndStationId] = useState<string | null>(null);
+
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
+    const filteredStations = stations.filter(station =>
+        (!selectedTypeFilter || station.stationType.includes(selectedTypeFilter)) &&
+        (!searchQuery || station.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
 
     useEffect(() => {
         axios.get("http://localhost:8080/stations")
@@ -33,46 +47,47 @@ export default function StationDropdown() {
         <div className="flex flex-col space-y-4 w-full">
             <div>
                 <p className="text-sm font-medium mb-1">Begin station:</p>
-                <Select
+                <Autocomplete
                     className="w-full"
-                    items={stations}
                     label="Begin station"
                     placeholder={loading ? "Loading..." : "Selecteer een station"}
-                    isDisabled={loading || stations.length === 0}
-                    selectedKeys={beginStationId ? [beginStationId] : []}
-                    onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setBeginStationId(selectedKey);
+                    value={beginStationId ? stations.find(s => s._id === beginStationId)?.title || "" : ""}
+                    onInputChange={(val: string) => setSearchQuery(val)}
+                    onValueChange={(val: string) => {
+                        const station = stations.find(s => s.title === val);
+                        setBeginStationId(station?._id || null);
                     }}
+                    disabled={loading || filteredStations.length === 0}
                 >
-                    {(station) => (
-                        <SelectItem key={station._id}>
+                    {filteredStations.map(station => (
+                        <AutocompleteItem key={station._id}>
                             {station.title}
-                        </SelectItem>
-                    )}
-                </Select>
+                        </AutocompleteItem>
+                    ))}
+                </Autocomplete>
             </div>
 
             <div>
                 <p className="text-sm font-medium mb-1">Eind station:</p>
-                <Select
+                <Autocomplete
                     className="w-full"
-                    items={stations}
                     label="Eind station"
                     placeholder={loading ? "Loading..." : "Selecteer een station"}
-                    isDisabled={loading || stations.length === 0}
-                    selectedKeys={endStationId ? [endStationId] : []}
-                    onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setEndStationId(selectedKey);
+                    value={endStationId ? stations.find(s => s._id === endStationId)?.title || "" : ""}
+                    onInputChange={(val: string) => setSearchQuery(val)}
+                    onValueChange={(val: string) => {
+                        const station = stations.find(s => s.title === val);
+                        setEndStationId(station?._id || null);
                     }}
+                    disabled={loading || filteredStations.length === 0}
                 >
-                    {(station) => (
-                        <SelectItem key={station._id}>
+                    {filteredStations.map(station => (
+                        <AutocompleteItem key={station._id}>
                             {station.title}
-                        </SelectItem>
-                    )}
-                </Select>
+                        </AutocompleteItem>
+                    ))}
+                </Autocomplete>
+
             </div>
 
             {beginStationId && endStationId && beginStationId === endStationId && (

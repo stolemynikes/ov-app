@@ -7,8 +7,9 @@ const stationSchema = mongoose.Schema(
             required: true,
         },
         stationType: { 
-            type: String,
-            required: true,
+            type: [String],
+            required: [true, "Atleast one station type is required."],
+            enum: ["train", "bus", "metro", "tram"],
         },
         elevatorAccessible: { 
             type: Boolean,
