@@ -30,7 +30,7 @@ export default function VervoerSelect({ selectedFilter, onChange }: VervoerSelec
         <RadioGroup
             label="Selecteer vervoer:"
             orientation="horizontal"
-            className="flex gap-4"
+            className="flex gap-4 w-full justify-between"
             value={selectedFilter}
             onValueChange={onChange}
         >

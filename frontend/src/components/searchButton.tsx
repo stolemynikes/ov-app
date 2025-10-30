@@ -1,8 +1,14 @@
 import { Button } from "@heroui/react";
 
-export default function App() {
+interface SearchButtonProps {
+    onClick: () => void;
+    disabled?: boolean;
+
+}
+
+export default function SearchButton({onClick, disabled}: SearchButtonProps) {
     return <>
-        <Button className="w-full" color="primary">
+        <Button className="w-full" color="primary" onClick={onClick} isDisabled={disabled}>
             Plan mijn reis!
         </Button>
     </>
